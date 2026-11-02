@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>인구 피라미드 탐험대</title>
+<meta name="description" content="초등학교 6학년 사회: 인구 피라미드 5가지 유형을 직접 조작하며 배우는 학습 웹앱">
+<meta property="og:title" content="인구 피라미드 탐험대">
+<meta property="og:description" content="인구 피라미드 유형 알아보기, 우리나라 인구 변화, 2050년 피라미드 만들기, 퀴즈">
+<meta name="theme-color" content="#FF7A45">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FFF0C2'/%3E%3Crect x='26' y='10' width='12' height='8' rx='2' fill='%238E4FC2'/%3E%3Crect x='18' y='22' width='28' height='8' rx='2' fill='%232F7FD8'/%3E%3Crect x='12' y='34' width='40' height='8' rx='2' fill='%232F7FD8'/%3E%3Crect x='6' y='46' width='52' height='8' rx='2' fill='%232E9E5B'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#FFF9EF; --card:#FFFFFF; --ink:#2B2D42; --sub:#585C70; --line:#ECE3D2;
+  --primary:#FF7A45; --primary-d:#E0581F; --blue:#2F7FD8; --ok:#1F8A4C; --ok-bg:#E3F6EA; --bad:#D93B40; --bad-bg:#FDE8E8;
+  --y:#2E9E5B; --y2:#6CCB8F; --w:#2F7FD8; --w2:#72B2F2; --o:#8E4FC2; --o2:#BC8FE3;
+  --radius:18px; --shadow:0 4px 14px rgba(60,40,10,.08);
+}
+html{font-size:18px}
+html.present{font-size:25px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.65;font-size:1rem;-webkit-tap-highlight-color:transparent;word-break:keep-all;overflow-wrap:break-word}
+h1,h2,h3{line-height:1.35;margin:.2rem 0 .6rem}
+h2{font-size:1.35rem} h3{font-size:1.1rem}
+p{margin:.4rem 0}
+
+/* 상단 */
+header.top{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;background:#fff;border-bottom:2px solid var(--line);flex-wrap:wrap}
+.brand{font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:.4rem;flex:1;min-width:11rem}
+.brand .logo{font-size:1.6rem}
+.top-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{appearance:none;border:none;border-radius:14px;padding:.55rem 1.1rem;font:inherit;font-weight:700;cursor:pointer;min-height:2.8rem;background:#F1EADC;color:var(--ink);transition:transform .1s,background .2s,box-shadow .2s;touch-action:manipulation}
+.btn:active{transform:scale(.96)}
+.btn:focus-visible,.tab:focus-visible,.opt:focus-visible{outline:4px solid #FFC94D;outline-offset:2px}
+.btn.primary{background:var(--primary);color:#fff;box-shadow:0 3px 0 var(--primary-d)}
+.btn.blue{background:var(--blue);color:#fff;box-shadow:0 3px 0 #1D5FA8}
+.btn.ghost{background:#fff;border:2px solid var(--line)}
+.btn.on{background:var(--ink);color:#fff}
+.btn.danger{background:var(--bad);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;gap:.45rem;overflow-x:auto;padding:.6rem 1rem;border-bottom:2px solid var(--line);scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;appearance:none;border:2px solid var(--line);background:#fff;border-radius:999px;padding:.5rem 1rem;font:inherit;font-weight:800;cursor:pointer;min-height:2.9rem;color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+main{max-width:1180px;margin:0 auto;padding:1rem 1rem 4rem}
+html.present main{max-width:1700px}
+section.panel{display:none}
+section.panel.active{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.guide{background:#FFF0C2;border:2px dashed #F2BE2E;border-radius:14px;padding:.7rem 1rem;font-weight:700;margin-bottom:1rem}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.1rem;border:2px solid var(--line)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:1rem;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.muted{color:var(--sub)}
+.source{font-size:.9rem;color:var(--sub);margin-top:.4rem}
+
+/* 그래프 */
+svg.pyr{width:100%;height:auto;display:block;user-select:none}
+.pyr .age{font-size:15px;fill:#4A4E63;dominant-baseline:middle;font-weight:700}
+.pyr .head{font-size:22px;font-weight:800;fill:#2B2D42}
+.pyr .tick{font-size:15px;fill:#585C70;font-weight:600}
+.pyr .axt{font-size:17px;font-weight:800;fill:#2B2D42}
+.pyr .axl{stroke:#9AA0B4;stroke-width:2}
+.pyr .grid{stroke:#D9DCE6;stroke-width:1;stroke-dasharray:4 4}
+.pyr .bars rect{cursor:pointer;transition:opacity .3s}
+.pyr[data-hl~="ages"] .ages text{animation:blink 1s infinite;fill:var(--primary-d)}
+.pyr[data-hl~="axis"] .axis{animation:blink 1s infinite}
+.pyr[data-hl~="axis"] .axis .axl{stroke:var(--primary-d);stroke-width:4}
+.pyr[data-hl~="male"] .male rect{animation:glow 1s infinite}
+.pyr[data-hl~="female"] .female rect{animation:glow 1s infinite}
+.pyr[data-hl~="male"] .male-h,.pyr[data-hl~="female"] .female-h{fill:var(--primary-d);animation:blink 1s infinite}
+.pyr[data-hl~="dim"] .bars rect:not(.hot){opacity:.22}
+.pyr[data-hl~="only-y"] .bars rect:not(.g-y),.pyr[data-hl~="only-w"] .bars rect:not(.g-w),.pyr[data-hl~="only-o"] .bars rect:not(.g-o){opacity:.15}
+.pyr .hot{stroke:#FF7A45;stroke-width:4;animation:glow 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+@keyframes glow{50%{opacity:.55}}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.5rem;font-size:.95rem;font-weight:700}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.legend i{width:1.1rem;height:1.1rem;border-radius:4px;display:inline-block}
+.sbar{display:flex;height:2.1rem;border-radius:10px;overflow:hidden;margin-top:.5rem;font-weight:800;color:#fff;font-size:.95rem}
+.sbar span{display:flex;align-items:center;justify-content:center;transition:width .6s;white-space:nowrap;overflow:hidden}
+
+/* 용어 */
+.term{border-bottom:3px dotted #F2A33A;cursor:help;font-weight:700}
+#termPop{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%) translateY(150%);background:var(--ink);color:#fff;padding:.8rem 1.1rem;border-radius:16px;max-width:min(92vw,40rem);z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .25s;font-size:1rem}
+#termPop.show{transform:translateX(-50%) translateY(0)}
+#termPop b{color:#FFD36B}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:.5rem;margin-top:.5rem}
+.gloss div{background:#FFFBF3;border:2px solid var(--line);border-radius:12px;padding:.55rem .8rem}
+.gloss b{color:var(--primary-d)}
+
+/* 알아보기 */
+.step-box{min-height:12rem}
+.step-num{display:inline-block;background:var(--primary);color:#fff;border-radius:999px;padding:.1rem .8rem;font-weight:800;margin-bottom:.4rem}
+.dots{display:flex;gap:.4rem;justify-content:center;margin:.8rem 0}
+.dots button{width:1.1rem;height:1.1rem;border-radius:50%;border:none;background:#E2D8C4;cursor:pointer;padding:0}
+.dots button.on{background:var(--primary);transform:scale(1.25)}
+.info{background:#EEF6FF;border-radius:12px;padding:.6rem .9rem;margin-top:.6rem;font-weight:700;min-height:2.8rem}
+
+/* 유형 카드 */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(14.5rem,1fr));gap:1rem}
+.tcard{appearance:none;font:inherit;text-align:left;cursor:pointer;background:#fff;border:3px solid var(--line);border-radius:22px;padding:1rem;box-shadow:var(--shadow);transition:transform .15s,border-color .2s;color:var(--ink)}
+.tcard:hover,.tcard:focus-visible{transform:translateY(-4px);border-color:var(--tc)}
+.tcard .tname{font-size:1.25rem;font-weight:800;color:var(--tc)}
+.tcard .talias{font-weight:700;color:var(--sub)}
+.tcard .more{display:inline-block;margin-top:.4rem;font-weight:800;color:var(--tc)}
+.fact{border-left:6px solid var(--tc);background:#FFFCF6;border-radius:12px;padding:.6rem .9rem;margin-bottom:.7rem}
+.fact h3{margin:0 0 .3rem;color:var(--tc)}
+.fact ul{margin:.2rem 0;padding-left:1.2rem}
+.pill{display:inline-block;padding:.15rem .7rem;border-radius:999px;font-weight:800;margin:.15rem .3rem .15rem 0;background:#F1EADC}
+.pill.up{background:#FFE1D6;color:#B23D0C}.pill.down{background:#DCEBFF;color:#1D5FA8}.pill.move{background:#EFE3FA;color:#6B2FA0}
+
+/* 모달 */
+.modal{position:fixed;inset:0;background:rgba(30,25,15,.5);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:1.2rem .8rem;overflow-y:auto}
+.modal[hidden]{display:none}
+.modal-box{background:var(--bg);border-radius:24px;max-width:1100px;width:100%;padding:1.2rem;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal-x{position:absolute;top:.7rem;right:.7rem;width:3rem;height:3rem;border-radius:50%;border:none;background:#fff;font-size:1.3rem;cursor:pointer;box-shadow:var(--shadow)}
+.detail-head{display:flex;gap:.8rem;align-items:center;margin-bottom:.8rem;padding-right:3.2rem}
+.big-emoji{font-size:2.6rem}
+.detail-head h2{margin:0;color:var(--tc)}
+
+/* 우리나라 */
+.year-big{font-size:2.6rem;font-weight:900;color:var(--primary-d);line-height:1}
+.yearbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.6rem}
+input[type=range]{width:100%;height:2.6rem;accent-color:var(--primary);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{width:2rem;height:2rem}
+.qbox{background:#FFF4E8;border:2px solid #FFD2B3;border-radius:16px;padding:.8rem 1rem;margin-top:.8rem}
+.qbox .q{font-weight:800;font-size:1.1rem}
+.answer{margin-top:.5rem;background:#fff;border-radius:12px;padding:.6rem .8rem}
+
+/* 만들기 */
+.slider-row{display:grid;grid-template-columns:7.2rem 1fr 3rem;gap:.6rem;align-items:center;padding:.25rem 0}
+.slider-row label{font-weight:800;display:flex;align-items:center;gap:.35rem}
+.slider-row label i{width:.9rem;height:.9rem;border-radius:3px;flex:0 0 auto}
+.slider-row output{font-weight:800;text-align:right}
+.presets{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.mission{border-color:#FFC9A8;background:#FFF6EE}
+.mission-grid{display:grid;grid-template-columns:minmax(0,1fr) 14rem;gap:1rem;align-items:center}
+@media (max-width:700px){.mission-grid{grid-template-columns:1fr}.ref{max-width:16rem;margin:0 auto}}
+.ref{background:#fff;border-radius:14px;padding:.5rem;border:2px solid var(--line)}
+.ref-title{font-weight:800;text-align:center}
+.ref-cap{text-align:center;color:var(--sub);font-size:.9rem}
+.hints summary{cursor:pointer;font-weight:800;padding:.4rem 0;color:var(--primary-d)}
+.hints ol{margin:.2rem 0;padding-left:1.4rem}
+.result{border:3px solid var(--tc,#ccc);border-radius:18px;padding:.9rem 1rem;background:#fff;margin-top:1rem}
+.result .rt{font-size:1.3rem;font-weight:900;color:var(--tc)}
+.simrow{display:grid;grid-template-columns:7rem 1fr 3.2rem;gap:.5rem;align-items:center;margin:.25rem 0;font-weight:700}
+.simbar{height:1rem;background:#F1EADC;border-radius:999px;overflow:hidden}
+.simbar span{display:block;height:100%;border-radius:999px;transition:width .4s}
+
+/* 퀴즈 */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap}
+.progress{height:.8rem;background:#F1EADC;border-radius:999px;overflow:hidden;margin:.5rem 0 1rem}
+.progress span{display:block;height:100%;background:var(--primary);transition:width .4s}
+.qtext{font-size:1.25rem;font-weight:800;margin:.3rem 0 .8rem}
+.qgraph{max-width:520px;margin:0 auto .8rem;background:#fff;border-radius:14px;border:2px solid var(--line);padding:.4rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:.6rem}
+.opt{appearance:none;font:inherit;font-weight:800;text-align:left;background:#fff;border:3px solid var(--line);border-radius:16px;padding:.75rem 1rem;cursor:pointer;min-height:3.4rem;color:var(--ink);position:relative}
+.opt small{display:block;font-weight:600;color:var(--sub);font-size:.9rem}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt:disabled{cursor:default}
+.opt .key{position:absolute;top:-.7rem;right:.6rem;background:#FFD36B;color:#5a3d00;font-size:.8rem;padding:0 .5rem;border-radius:999px}
+.feedback{margin-top:1rem;border-radius:16px;padding:.8rem 1rem;font-weight:700}
+.feedback.ok{background:var(--ok-bg);border:2px solid var(--ok)}
+.feedback.no{background:var(--bad-bg);border:2px solid var(--bad)}
+.score-big{font-size:3rem;font-weight:900;color:var(--primary-d);text-align:center;line-height:1.1}
+.review{border:2px solid var(--line);border-radius:16px;padding:.8rem 1rem;margin-top:.8rem;background:#fff}
+.rec-list{list-style:none;padding:0;margin:.4rem 0}
+.rec-list li{padding:.3rem 0;border-bottom:1px dashed var(--line)}
+
+/* 입력 칸 */
+textarea,input[type=text],input[type=password]{width:100%;font:inherit;padding:.6rem .8rem;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:5.5rem;resize:vertical}
+textarea:focus,input:focus{outline:3px solid #FFC94D;border-color:#FFC94D}
+.field{margin-bottom:.7rem}
+.field label{font-weight:800;display:block;margin-bottom:.2rem}
+.teacher-on #teacherBtn{background:var(--ink);color:#fff}
+.tlist{max-height:22rem;overflow:auto;border:2px solid var(--line);border-radius:12px;padding:.5rem .8rem;background:#fff}
+.tlist ol{padding-left:1.4rem;margin:.2rem 0}
+.tlist li{margin-bottom:.4rem}
+@media (max-width:600px){
+  .slider-row{grid-template-columns:6.4rem 1fr 2.6rem}
+  .simrow{grid-template-columns:6rem 1fr 3rem}
+  .year-big{font-size:2.1rem}
+}
+.ans-box{min-height:6.5rem}
+.cnt{text-align:right}
+.done-box{margin-top:1rem;background:#EEF6FF;border:2px solid #B9D7F7;border-radius:16px;padding:.9rem 1rem}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+#bPreview{display:block;width:100%;max-width:22rem;margin-top:.8rem;border:2px solid var(--line);border-radius:8px;background:#fff}
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:0}
+  body.print-sheet>*:not(#printArea){display:none!important}
+  body.print-sheet #printArea{display:block}
+  #printArea img{width:100%;display:block}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">🔺</span>인구 피라미드 탐험대</div>
+  <div class="top-btns">
+    <button class="btn ghost" id="presentBtn" aria-pressed="false">📺 발표 모드</button>
+    <button class="btn ghost" id="teacherBtn">🧑‍🏫 교사 모드</button>
+  </div>
+</header>
+<nav class="tabs" role="tablist" aria-label="메뉴">
+  <button class="tab" role="tab" data-tab="learn">🔍 알아보기</button>
+  <button class="tab" role="tab" data-tab="types">🃏 유형 카드</button>
+  <button class="tab" role="tab" data-tab="korea">📈 우리나라의 변화</button>
+  <button class="tab" role="tab" data-tab="build">🛠️ 내가 만드는 피라미드</button>
+  <button class="tab" role="tab" data-tab="quiz">✅ 퀴즈</button>
+</nav>
+
+<main>
+<!-- 1. 알아보기 -->
+<section class="panel" id="tab-learn">
+  <div class="guide">👉 ‘다음’ 버튼을 누르며 인구 피라미드 읽는 방법을 차례대로 알아봐요. 막대를 직접 눌러 봐도 돼요!</div>
+  <div class="grid2">
+    <div class="card">
+      <div id="learnPyr"></div>
+      <div class="legend" id="learnLegend"></div>
+      <div class="info" id="learnInfo">👆 막대를 누르면 그 나이대의 사람 수가 나와요.</div>
+      <div class="source">출처: 통계청(대략적 수치) · 2020년 우리나라</div>
+    </div>
+    <div class="card">
+      <div class="step-box" id="stepBox"></div>
+      <div class="dots" id="stepDots"></div>
+      <div class="row" style="justify-content:space-between">
+        <button class="btn ghost" id="prevStep">◀ 이전</button>
+        <button class="btn ghost" id="autoStep">▶ 자동으로 보기</button>
+        <button class="btn primary" id="nextStep">다음 ▶</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <h2>📖 낱말 사전</h2>
+    <p class="muted">어려운 낱말이에요. 다른 화면에서도 <span class="term" data-t="인구 피라미드">점선 밑줄 낱말</span>을 누르면 뜻이 나와요.</p>
+    <div class="gloss" id="glossList"></div>
+  </div>
+</section>
+
+<!-- 2. 유형 카드 -->
+<section class="panel" id="tab-types">
+  <div class="guide">👉 궁금한 카드를 눌러 보세요. 자세한 설명과 큰 그래프가 나와요.</div>
+  <div class="cards" id="typeCards"></div>
+  <div class="legend" id="typesLegend" style="margin-top:1rem"></div>
+</section>
+
+<!-- 3. 우리나라의 변화 -->
+<section class="panel" id="tab-korea">
+  <div class="guide">👉 슬라이더를 움직이거나 ▶ 재생 버튼을 눌러 우리나라 인구 피라미드가 어떻게 바뀌는지 보세요.</div>
+  <div class="grid2">
+    <div class="card">
+      <div id="koreaPyr"></div>
+      <div class="legend" id="koreaLegend"></div>
+      <div class="info" id="koreaInfo">👆 막대를 누르면 그 나이대의 사람 수가 나와요.</div>
+      <div class="source">출처: 통계청(대략적 수치)</div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="year-big" id="kYear">1960년</div><div style="font-weight:800;font-size:1.15rem" id="kLabel"></div></div>
+        <button class="btn primary" id="kPlay">▶ 재생</button>
+      </div>
+      <input type="range" id="kSlider" min="0" max="2" step="1" value="0" aria-label="연도 고르기">
+      <div class="yearbtns" id="kYearBtns"></div>
+      <p style="margin-top:.8rem"><b>전체 인구:</b> <span id="kTotal"></span></p>
+      <div class="sbar" id="kBar"></div>
+      <p id="kNote" style="margin-top:.6rem"></p>
+      <div class="qbox">
+        <div class="q">🤔 왜 이렇게 변했을까?</div>
+        <p id="kQ"></p>
+        <button class="btn ghost" id="kReveal">💡 생각해 본 뒤 눌러 보기</button>
+        <div class="answer" id="kA" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 내가 만드는 피라미드 -->
+<section class="panel" id="tab-build">
+  <div class="guide">👉 2050년 우리나라 인구 피라미드를 예상해서 막대로 만들고, 그렇게 만든 까닭을 써 보세요. 다 쓰면 PDF로 받을 수 있어요!</div>
+  <div class="card mission">
+    <div class="mission-grid">
+      <div>
+        <h2>📝 미션: 2050년 우리나라의 인구 피라미드를 예상해서 만들어 보세요!</h2>
+        <p>2020년으로부터 30년 뒤, 우리나라의 인구 피라미드는 어떤 모양이 될까요? 2020년 그래프를 참고해서 슬라이더로 막대 길이를 조절해 보세요.</p>
+        <details class="hints">
+          <summary>💡 힌트 보기</summary>
+          <ol>
+            <li>2020년에 가장 많은 40~60대는 30년 뒤에 몇 살이 될까요?</li>
+            <li>요즘 태어나는 아기 수는 늘고 있나요, 줄고 있나요? (<span class="term" data-t="저출산">저출산</span>)</li>
+            <li>의료가 발달하면 오래 사는 사람은 어떻게 될까요? (<span class="term" data-t="고령화">고령화</span>)</li>
+          </ol>
+        </details>
+      </div>
+      <div class="ref"><div class="ref-title">참고: 2020년 우리나라</div><div id="refPyr"></div><div class="ref-cap">아래 = 어린이 · 위 = 노인</div></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:1rem">
+    <div class="card">
+      <h3 style="text-align:center">🔮 내가 예상한 2050년 우리나라</h3>
+      <div id="buildPyr"></div>
+      <div class="legend" id="buildLegend"></div>
+      <div class="sbar" id="bBar"></div>
+    </div>
+    <div class="card">
+      <h3>🎚️ 막대 길이 조절 <small class="muted">(남녀가 함께 움직여요)</small></h3>
+      <div id="sliders"></div>
+      <div class="presets"><button class="btn ghost" id="bFrom2020" type="button">↩ 2020년 모양으로 되돌리기</button></div>
+      <div class="result" id="bResult"></div>
+    </div>
+  </div>
+  <form class="card" id="reasonForm" style="margin-top:1rem" autocomplete="off">
+    <h3>✍️ 생각해 봅시다</h3>
+    <p class="muted">내가 만든 2050년 인구 피라미드를 보며 세 가지 질문에 답해 보세요.</p>
+    <div class="field"><label for="bName">이름</label><input type="text" id="bName" maxlength="20" placeholder="예: 6학년 2반 김하늘"></div>
+    <div class="field"><label for="bReason">① 내가 이렇게 만든 까닭</label><textarea id="bReason" class="ans-box" maxlength="300" placeholder="예: 2020년에 가장 많던 40~60대가 2050년에는 70~90대가 되니까 위쪽 막대를 길게 했어요. 그리고 아기가 점점 적게 태어나서 맨 아래 막대를 짧게 했어요."></textarea><div class="muted cnt" data-for="bReason"></div></div>
+    <div class="field"><label for="bProblem">② 이런 형태의 인구 구조에서 생길 수 있는 문제는 무엇일까요?</label><textarea id="bProblem" class="ans-box" maxlength="300" placeholder="예: 일할 사람이 줄어들고, 어르신을 돌보는 데 드는 돈과 시간이 많아질 것 같아요."></textarea><div class="muted cnt" data-for="bProblem"></div></div>
+    <div class="field"><label for="bSolution">③ 이러한 인구 구조에서 더 살기 좋은 나라가 되려면 어떻게 해야 할까요?</label><textarea id="bSolution" class="ans-box" maxlength="300" placeholder="예: 아이를 키우기 좋은 환경을 만들고, 어르신도 건강하게 일할 수 있는 일자리를 늘려야 해요."></textarea><div class="muted cnt" data-for="bSolution"></div></div>
+    <div class="row"><button class="btn primary" type="submit" style="font-size:1.1rem">✅ 완성하고 PDF로 받기</button><span id="bStatus" style="font-weight:700"></span></div>
+    <div id="bDone" class="done-box" hidden>
+      <p style="font-weight:800;margin-top:0">📄 내 결과지가 만들어졌어요!</p>
+      <p class="muted" style="margin-top:0">파일이 저절로 내려받아지지 않으면 아래 버튼 가운데 하나를 눌러 보세요.</p>
+      <div class="row">
+        <a class="btn blue" id="bDl" download>📥 PDF 내려받기</a>
+        <a class="btn ghost" id="bOpen" target="_blank" rel="noopener">🗂️ 새 창에서 PDF 열기</a>
+        <button class="btn ghost" type="button" id="bPrint">🖨️ 인쇄 · PDF로 저장</button>
+      </div>
+      <img id="bPreview" alt="내가 만든 결과지 미리 보기">
+    </div>
+  </form>
+</section>
+
+<!-- 5. 퀴즈 -->
+<section class="panel" id="tab-quiz">
+  <div class="guide">👉 ‘퀴즈 시작’을 누르면 10문제가 나와요. 답을 고르면 바로 해설을 볼 수 있어요.</div>
+  <div class="card" id="quizBox"></div>
+</section>
+
+</main>
+
+<div id="modal" class="modal" hidden><div class="modal-box" role="dialog" aria-modal="true"><button class="modal-x" aria-label="닫기">✕</button><div id="modalBody"></div></div></div>
+<div id="termPop" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ================= 공통 도구 ================= */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 학습 기록은 이 기기의 localStorage에만 저장합니다 (외부 전송 없음)
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const KEY = { quiz: 'ppx_quiz_records', tab: 'ppx_last_tab', present: 'ppx_present', build: 'ppx_build_2050' };
+
+/* ================= 낱말 풀이 ================= */
+const GLOSS = {
+  '인구 피라미드': '나이와 남녀에 따라 사람이 얼마나 있는지 막대를 쌓아 나타낸 그래프',
+  '인구 구조': '한 지역의 인구를 나이·남녀 등으로 나누어 본 짜임새',
+  '유소년층': '0~14세의 어린이와 청소년 초반',
+  '생산 가능 인구': '15~64세. 일을 해서 물건을 만들거나 돈을 벌 수 있는 나이의 사람들',
+  '청장년층': '한창 일하는 젊은이와 어른 (대략 15~64세)',
+  '노년층': '65세 이상의 어르신',
+  '출생률': '인구에 비해 아기가 얼마나 많이 태어나는지 나타낸 비율',
+  '사망률': '인구에 비해 세상을 떠나는 사람이 얼마나 많은지 나타낸 비율',
+  '저출산': '아기가 적게 태어나는 것',
+  '고령화': '전체 인구 가운데 노인(65세 이상)이 차지하는 비율이 높아지는 것',
+  '인구 이동': '사람들이 사는 곳을 다른 지역으로 옮기는 것',
+  '전입': '다른 곳에서 우리 지역으로 이사 들어오는 것',
+  '전출': '우리 지역에서 다른 곳으로 이사 나가는 것',
+  '부양': '혼자 생활하기 어려운 사람을 돌보고 생활비를 대 주는 것',
+  '개발 도상국': '산업과 경제가 한창 발전하고 있는 나라',
+  '선진국': '산업과 경제가 많이 발전하고 생활 수준이 높은 나라',
+  '연금': '나이가 들어 일을 그만둔 뒤 다달이 받는 돈',
+  '귀농·귀촌': '도시에 살던 사람이 농촌으로 옮겨 가 농사를 짓거나 사는 것',
+  '방추형': '가운데가 불룩하고 아래가 좁은 인구 피라미드. 저출산·고령화로 인구가 줄어드는 모양',
+  '초고령 사회': '65세 이상 인구가 전체의 20% 이상인 사회'
+};
+// [[낱말]] 또는 [[낱말|보이는 글자]] → 누르면 뜻이 나오는 낱말
+const md = s => s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (m, w, l) => `<span class="term" tabindex="0" data-t="${w}">${l || w}</span>`);
+let popTimer;
+function showTerm(w) {
+  const pop = $('#termPop'); if (!GLOSS[w]) return;
+  pop.innerHTML = `📖 <b>${esc(w)}</b> : ${esc(GLOSS[w])}`;
+  pop.classList.add('show'); clearTimeout(popTimer);
+  popTimer = setTimeout(() => pop.classList.remove('show'), 4500);
+}
+document.addEventListener('click', e => { const t = e.target.closest('.term'); if (t) showTerm(t.dataset.t); });
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('term')) { e.preventDefault(); showTerm(e.target.dataset.t); } });
+
+/* ================= 인구 피라미드 그래프 (SVG) ================= */
+const BANDS = 18;
+const AGE = ['0~4','5~9','10~14','15~19','20~24','25~29','30~34','35~39','40~44','45~49','50~54','55~59','60~64','65~69','70~74','75~79','80~84','85+'];
+const ageName = i => i === 17 ? '85세 이상' : AGE[i] + '세';
+const grp = i => i < 3 ? 'y' : (i < 13 ? 'w' : 'o');
+const COLORS = { y: ['#2E9E5B', '#6CCB8F'], w: ['#2F7FD8', '#72B2F2'], o: ['#8E4FC2', '#BC8FE3'] }; // [남자(진하게), 여자(연하게)]
+const SVGNS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs, parent) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function txt(p, x, y, s, a = {}) { const t = svgEl('text', Object.assign({ x, y, 'text-anchor': 'middle' }, a), p); t.textContent = s; return t; }
+
+class Pyramid {
+  constructor(container, opt = {}) {
+    const o = this.o = Object.assign({ max: 100, compact: false, ticks: null, fmt: null, onBar: null, label: '인구 피라미드 그래프' }, opt);
+    const c = o.compact;
+    this.W = 640; this.H = c ? 330 : 540;
+    this.top = c ? 8 : 56; this.bot = c ? 8 : 62;
+    this.gap = c ? 8 : 40; this.cx = this.W / 2;
+    this.side = this.cx - this.gap - (c ? 6 : 16);
+    this.bh = (this.H - this.top - this.bot) / BANDS;
+    const svg = this.svg = svgEl('svg', { viewBox: `0 0 ${this.W} ${this.H}`, class: 'pyr' + (c ? ' compact' : ''), role: 'img', 'aria-label': o.label });
+    container.innerHTML = ''; container.appendChild(svg);
+    if (!c) {
+      [[0, 3, '#EEF8F1'], [3, 13, '#EEF4FC'], [13, 18, '#F6EFFC']].forEach(([a, b, col]) => {
+        const y1 = this.yOf(b - 1), y2 = this.yOf(a) + this.bh;
+        svgEl('rect', { x: 4, y: y1, width: this.W - 8, height: y2 - y1, fill: col, rx: 8 }, svg);
+      });
+      txt(svg, this.cx - this.gap - this.side / 2, 30, '👨 남자', { class: 'head male-h' });
+      txt(svg, this.cx + this.gap + this.side / 2, 30, '👩 여자', { class: 'head female-h' });
+      const ax = this.axis = svgEl('g', { class: 'axis' }, svg);
+      const yb = this.H - this.bot + 8;
+      svgEl('line', { x1: this.cx - this.gap - this.side, y1: yb, x2: this.cx - this.gap, y2: yb, class: 'axl' }, ax);
+      svgEl('line', { x1: this.cx + this.gap, y1: yb, x2: this.cx + this.gap + this.side, y2: yb, class: 'axl' }, ax);
+      if (o.ticks) {
+        o.ticks.forEach(v => {
+          const d = this.scale(v);
+          [this.cx - this.gap - d, this.cx + this.gap + d].forEach(x => {
+            if (v > 0) svgEl('line', { x1: x, y1: this.top, x2: x, y2: yb, class: 'grid' }, svg);
+            svgEl('line', { x1: x, y1: yb, x2: x, y2: yb + 6, class: 'axl' }, ax);
+            txt(ax, x, yb + 24, o.fmt(v), { class: 'tick' });
+          });
+        });
+      } else {
+        txt(ax, this.cx - this.gap - this.side / 2, yb + 24, '◀ 바깥쪽일수록 많아요', { class: 'tick' });
+        txt(ax, this.cx + this.gap + this.side / 2, yb + 24, '바깥쪽일수록 많아요 ▶', { class: 'tick' });
+      }
+      txt(ax, this.cx, this.H - 6, '인구 수(명)', { class: 'axt' });
+    }
+    this.gAge = svgEl('g', { class: 'ages' }, svg);
+    if (!c) txt(this.gAge, this.cx, this.top - 12, '나이(세)', { class: 'axt' });
+    this.gm = svgEl('g', { class: 'bars male' }, svg);
+    this.gf = svgEl('g', { class: 'bars female' }, svg);
+    this.rm = []; this.rf = [];
+    for (let i = 0; i < BANDS; i++) {
+      const y = this.yOf(i), g = grp(i), h = Math.max(1, this.bh - (c ? 1.5 : 2.5));
+      const a = svgEl('rect', { y: y + 1, height: h, rx: c ? 2 : 4, fill: COLORS[g][0], class: 'g-' + g }, this.gm);
+      const b = svgEl('rect', { y: y + 1, height: h, rx: c ? 2 : 4, fill: COLORS[g][1], class: 'g-' + g }, this.gf);
+      this.rm.push(a); this.rf.push(b);
+      if (!c) txt(this.gAge, this.cx, y + this.bh / 2 + 1, AGE[i], { class: 'age' });
+      if (o.onBar) { a.addEventListener('click', () => o.onBar(i, 'm')); b.addEventListener('click', () => o.onBar(i, 'f')); }
+    }
+    this.cur = { m: Array(BANDS).fill(0), f: Array(BANDS).fill(0) };
+    this.draw(this.cur.m, this.cur.f);
+  }
+  yOf(i) { return this.top + (BANDS - 1 - i) * this.bh; }
+  scale(v) { return Math.max(0, Math.min(1, v / this.o.max)) * this.side; }
+  draw(m, f) {
+    for (let i = 0; i < BANDS; i++) {
+      const wm = this.scale(m[i]), wf = this.scale(f[i]);
+      this.rm[i].setAttribute('x', this.cx - this.gap - wm); this.rm[i].setAttribute('width', wm);
+      this.rf[i].setAttribute('x', this.cx + this.gap); this.rf[i].setAttribute('width', wf);
+    }
+  }
+  set(m, f, anim = true, dur = 700) {
+    cancelAnimationFrame(this.raf);
+    if (!anim || REDUCE) { this.cur = { m: [...m], f: [...f] }; this.draw(m, f); return; }
+    const from = { m: [...this.cur.m], f: [...this.cur.f] }, t0 = performance.now();
+    const step = t => {
+      const p = Math.min(1, (t - t0) / dur), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const cm = from.m.map((v, i) => v + (m[i] - v) * e), cf = from.f.map((v, i) => v + (f[i] - v) * e);
+      this.cur = { m: cm, f: cf }; this.draw(cm, cf);
+      if (p < 1) this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  }
+  hl(keys) { this.svg.setAttribute('data-hl', keys || ''); }
+  hot(i, s) { $$('.hot', this.svg).forEach(r => r.classList.remove('hot')); if (i != null) (s === 'f' ? this.rf : this.rm)[i].classList.add('hot'); }
+}
+const LEGEND = `<span><i style="background:var(--y)"></i>0~14세 ${md('[[유소년층]]')}</span><span><i style="background:var(--w)"></i>15~64세 ${md('[[생산 가능 인구]]')}</span><span><i style="background:var(--o)"></i>65세 이상 ${md('[[노년층]]')}</span><span class="muted">진한 색 = 남자, 연한 색 = 여자</span>`;
+function shares(m, f) {
+  let y = 0, w = 0, o = 0;
+  for (let i = 0; i < BANDS; i++) { const v = m[i] + f[i]; if (grp(i) === 'y') y += v; else if (grp(i) === 'w') w += v; else o += v; }
+  const t = y + w + o || 1;
+  const Y = Math.round(y / t * 100), O = Math.round(o / t * 100);
+  return { Y, W: 100 - Y - O, O, total: y + w + o };
+}
+function shareBar(s) {
+  const seg = (v, c, n) => `<span style="width:${v}%;background:${c}" title="${n} ${v}%">${v >= 9 ? v + '%' : ''}</span>`;
+  return seg(s.Y, 'var(--y)', '0~14세') + seg(s.W, 'var(--w)', '15~64세') + seg(s.O, 'var(--o)', '65세 이상');
+}
+
+/* ================= 5가지 유형 자료 ================= */
+// tpl: 0~4세부터 85세 이상까지 18칸의 상대적인 막대 길이 (남자 기준)
+const TYPES = {
+  pyramid: {
+    name: '피라미드형', alias: '인구 증가형', emoji: '🔺', color: '#E2572B',
+    tpl: [100, 90, 81, 73, 66, 59, 52, 46, 40, 34, 29, 24, 19, 15, 11, 7, 4, 2],
+    short: '아래가 넓고 위로 갈수록 뾰족해요',
+    meaning: '이집트의 피라미드처럼 아래(어린이)가 가장 넓고, 위(노인)로 갈수록 뾰족하게 좁아져서 붙은 이름이에요. 인구가 계속 늘어나서 ‘인구 증가형’이라고도 해요.',
+    pills: [['up', '출생률 높음 ⬆'], ['up', '사망률 높음 ⬆']],
+    rate: '아기가 많이 태어나요([[출생률]]이 높음). 하지만 병원과 먹을거리가 부족해 일찍 세상을 떠나는 사람도 많아요([[사망률]]이 높음). 그래서 오래 사는 사람이 적어요.',
+    ratio: '0~14세 [[유소년층]]이 가장 많고, 65세 이상 [[노년층]]은 아주 적어요.',
+    where: '1960년대의 우리나라, 오늘날 아프리카의 니제르·나이지리아처럼 경제가 한창 발전하고 있는 [[개발 도상국]]에서 볼 수 있어요.',
+    future: ['인구가 빠르게 늘어 학교, 일자리, 집, 식량이 모자랄 수 있어요.', '의료와 교육이 좋아지면 사망률이 낮아지고, 점점 종형으로 바뀌어요.']
+  },
+  bell: {
+    name: '종형', alias: '인구 정체형', emoji: '🔔', color: '#C98700',
+    tpl: [60, 60, 60, 59, 59, 58, 58, 57, 56, 54, 52, 49, 45, 40, 33, 25, 16, 8],
+    short: '아래와 가운데 폭이 비슷하고 위만 둥글어요',
+    meaning: '종처럼 아래와 가운데 폭이 비슷하고, 위쪽만 둥글게 좁아져서 붙은 이름이에요. 인구가 거의 늘지도 줄지도 않아 ‘인구 정체형’이라고도 해요.',
+    pills: [['down', '출생률 낮음 ⬇'], ['down', '사망률 낮음 ⬇']],
+    rate: '[[출생률]]과 [[사망률]]이 모두 낮아요. 태어나는 아기 수와 세상을 떠나는 사람 수가 비슷해서 인구가 크게 변하지 않아요.',
+    ratio: '어린이, 어른, 노인이 비교적 고르게 있어요. 의료가 좋아 오래 사는 사람이 많아 [[노년층]]도 조금씩 늘어요.',
+    where: '1990년 무렵의 우리나라처럼 경제가 발전한 뒤의 나라, 출생아 수가 비교적 꾸준한 일부 [[선진국]]에서 볼 수 있어요.',
+    future: ['지금은 안정적이지만, 아기가 더 적게 태어나면 방추형으로 바뀔 수 있어요.', '노인이 늘어나는 것에 대비해 노인 복지를 미리 준비해야 해요.']
+  },
+  spindle: {
+    name: '방추형', alias: '항아리형 · 인구 감소형', emoji: '🏺', color: '#2F7FD8',
+    tpl: [30, 33, 36, 40, 45, 52, 58, 62, 66, 68, 67, 64, 58, 56, 48, 38, 26, 16],
+    short: '아래가 좁고 가운데가 불룩해요',
+    meaning: '실을 감는 도구인 ‘방추(가락)’나 ‘항아리’처럼 가운데가 불룩하고 아래가 좁아서 붙은 이름이에요. 앞으로 인구가 줄어들어 ‘인구 감소형’이라고도 해요.',
+    pills: [['down', '출생률 매우 낮음 ⬇⬇'], ['down', '사망률 낮음 ⬇'], ['', '출생률 < 사망률']],
+    rate: '[[출생률]]이 아주 낮아져 [[사망률]]보다 낮아져요. 태어나는 아기보다 세상을 떠나는 사람이 많아지면 인구가 줄어요. 이런 모습을 [[저출산]]·[[고령화]]라고 해요.',
+    ratio: '[[유소년층]]이 적고, 40~60대가 가장 많으며, [[노년층]] 비율이 점점 높아져요.',
+    where: '2020년대의 우리나라와 일본, 이탈리아, 독일처럼 아기가 적게 태어나는 [[선진국]]에서 볼 수 있어요.',
+    future: ['일할 사람([[생산 가능 인구]])이 줄고, 어르신을 돌보는 [[부양]] 부담이 커져요.', '학교가 문을 닫고, [[연금]]과 의료비가 많이 필요해져요.', '해결 방법: 아이 키우기 좋은 환경 만들기(육아 지원), 노인 일자리, 로봇·인공지능 활용 등']
+  },
+  star: {
+    name: '별형', alias: '도시형', emoji: '⭐', color: '#7A3FB8',
+    tpl: [45, 42, 38, 55, 80, 90, 85, 72, 60, 50, 40, 32, 25, 18, 13, 9, 5, 3],
+    short: '20~30대가 양옆으로 툭 튀어나왔어요',
+    meaning: '가운데(20~30대)가 양옆으로 툭 튀어나와 별(★)의 뾰족한 팔처럼 보여서 붙은 이름이에요. 도시에서 많이 나타나 ‘도시형’이라고도 해요.',
+    pills: [['move', '인구 이동: 젊은 사람이 들어와요 ➡ (전입)']],
+    rate: '출생률·사망률보다 [[인구 이동]]이 모양을 만들어요. 일자리와 학교를 찾아 젊은 사람들이 다른 지역에서 많이 들어와요([[전입]]).',
+    ratio: '15~64세 [[생산 가능 인구]], 특히 20~30대 [[청장년층]]이 매우 많아요. 어린이와 노인 비율은 상대적으로 낮아요.',
+    where: '서울, 경기도의 신도시, 큰 공장이나 회사가 모인 산업 도시(울산 등), 대학이 많은 도시에서 볼 수 있어요.',
+    future: ['사람이 몰려 집값이 오르고, 교통이 막히고, 환경 오염이 생길 수 있어요.', '어린이집과 학교가 부족해질 수 있어요.', '들어온 젊은 사람들이 나이가 들면 도시도 점점 [[고령화]]될 수 있어요.']
+  },
+  gourd: {
+    name: '표주박형', alias: '농촌형', emoji: '🍐', color: '#1F8A4C',
+    tpl: [40, 38, 36, 25, 15, 14, 16, 20, 26, 32, 38, 44, 48, 50, 46, 38, 26, 14],
+    short: '가운데가 잘록하고 위가 넓어요',
+    meaning: '박을 반으로 갈라 만든 ‘표주박(호리병박)’처럼 가운데가 잘록하게 들어가서 붙은 이름이에요. 농촌에서 많이 나타나 ‘농촌형’이라고도 해요.',
+    pills: [['move', '인구 이동: 젊은 사람이 빠져나가요 ⬅ (전출)']],
+    rate: '젊은 사람들이 일자리와 학교를 찾아 도시로 빠져나가요([[전출]]). 남아 있는 사람은 주로 어르신과 어린이예요.',
+    ratio: '15~64세 [[청장년층]]이 적어 가운데가 잘록하고, 65세 이상 [[노년층]] 비율이 높아요.',
+    where: '농촌이나 어촌, 산골 마을처럼 젊은 사람들이 떠난 지역에서 볼 수 있어요.',
+    future: ['농사지을 사람이 부족하고, 빈집과 문 닫는 학교가 늘어요.', '병원과 버스가 줄어 생활이 불편해지고, 마을이 사라질 수도 있어요.', '해결 방법: [[귀농·귀촌]] 지원, 스마트 농업, 지역 특산물·관광 살리기 등']
+  }
+};
+const TYPE_KEYS = Object.keys(TYPES);
+// 유형 틀(tpl)로 남녀 막대 값 만들기 (여자는 노년층이 조금 더 많게), jitter: 무작위로 살짝 흔들기
+function typeData(k, jitter = 0) {
+  const t = TYPES[k].tpl;
+  const r = () => 1 + (Math.random() * 2 - 1) * jitter;
+  const m = t.map(v => v * r()), f = t.map((v, i) => v * (i >= 13 ? 1 + (i - 12) * 0.07 : 1) * r());
+  return { m, f, max: Math.max(...m, ...f) * 1.08 };
+}
+
+/* ================= 탭 전환 ================= */
+const inited = {};
+function openTab(name) {
+  $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === name ? 'true' : 'false'));
+  $$('section.panel').forEach(s => s.classList.toggle('active', s.id === 'tab-' + name));
+  if (!inited[name]) { inited[name] = true; INIT[name](); }
+  if (name !== 'korea') stopPlay();
+  if (name !== 'learn') stopAuto();
+  store.set(KEY.tab, name);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$$('.tab').forEach(b => b.addEventListener('click', () => openTab(b.dataset.tab)));
+
+/* ================= 모달 ================= */
+const modal = $('#modal');
+function openModal(html) { $('#modalBody').innerHTML = html; modal.hidden = false; document.body.style.overflow = 'hidden'; $('.modal-x').focus(); }
+function closeModal() { modal.hidden = true; document.body.style.overflow = ''; }
+$('.modal-x').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+/* ================= 우리나라 인구 자료 (단위: 천 명, 통계청 자료를 바탕으로 한 대략적 수치) ================= */
+const KOREA = [
+  { year: 1960, label: '🔺 피라미드형',
+    m: [2000, 1750, 1350, 1100, 950, 850, 750, 650, 550, 450, 400, 330, 270, 160, 100, 50, 20, 8],
+    f: [1900, 1680, 1300, 1080, 950, 860, 760, 650, 560, 470, 420, 360, 300, 200, 130, 75, 35, 15],
+    note: '어린이가 아주 많고, 노인은 아주 적어요.',
+    q: '왜 맨 아래(어린이) 막대가 이렇게 길고, 위쪽은 뾰족할까요?',
+    a: '6·25 전쟁이 끝난 뒤 아기가 아주 많이 태어났어요(출생률 높음). 하지만 병원과 먹을거리가 부족해 오래 사는 사람이 적었어요(사망률 높음).' },
+  { year: 1990, label: '🔺➡🔔 피라미드형에서 종형으로 바뀌는 중',
+    m: [1570, 1800, 2200, 2250, 2200, 2150, 1900, 1650, 1280, 1050, 950, 800, 600, 400, 270, 160, 70, 25],
+    f: [1440, 1650, 2050, 2100, 2120, 2080, 1850, 1600, 1250, 1050, 970, 850, 700, 520, 390, 250, 130, 55],
+    note: '맨 아래 막대가 그 위보다 짧아지기 시작했어요.',
+    q: '1960년에는 가장 길던 맨 아래 막대가 왜 그 위보다 짧아졌을까요?',
+    a: '“둘만 낳아 잘 기르자” 같은 가족계획 정책과 경제 발전으로 아기를 적게 낳기 시작했어요. 의료가 좋아져 오래 사는 사람은 늘었어요.' },
+  { year: 2020, label: '🏺 방추형(항아리형)',
+    m: [900, 1150, 1150, 1250, 1750, 1800, 1850, 2000, 2050, 2150, 2200, 1950, 1550, 1250, 850, 600, 350, 150],
+    f: [860, 1090, 1090, 1150, 1600, 1600, 1700, 1900, 1950, 2100, 2200, 2000, 1650, 1350, 1050, 850, 650, 400],
+    note: '아래는 좁고 40~60대가 가장 많아 가운데가 불룩해요.',
+    q: '왜 가운데(40~60대)가 가장 볼록하고, 아래는 좁아졌을까요?',
+    a: '아기가 많이 태어나던 1960~70년대에 태어난 사람들이 40~60대 어른이 되었어요. 요즘은 아기가 아주 적게 태어나서(저출산) 아래가 좁아졌어요.' }
+];
+const K_MAX = 2400, K_TICKS = [0, 1000, 2000];
+const kFmt = v => v === 0 ? '0' : (v / 10) + '만';
+const manName = v => `약 ${Math.round(v / 10).toLocaleString()}만 명`;
+
+/* ================= 1. 알아보기 ================= */
+let learnPyr, learnStep = 0, autoTimer = null, colorTimer = null;
+const L = KOREA[2];
+const STEPS = [
+  { t: '인구 피라미드가 뭘까요?', hl: '', html: `${md('[[인구 피라미드]]')}는 한 나라(또는 지역)에 사는 사람들을 <b>나이</b>와 <b>남녀</b>로 나누어 막대로 쌓아 올린 그래프예요. 왼쪽 그래프는 2020년 우리나라의 모습이에요.<br>이 그래프로 그 사회의 ${md('[[인구 구조]]')}(인구를 나이·남녀로 나누어 본 짜임새)를 한눈에 볼 수 있어요.` },
+  { t: '세로축 = 나이', hl: 'ages', html: '가운데 세로줄에 적힌 숫자는 <b>나이</b>예요.<br>⬇ <b>아래로 갈수록 어리고</b>, ⬆ <b>위로 갈수록 나이가 많아요</b>.<br>막대 한 칸은 5살씩 묶은 나이대예요. (예: 10~14세)' },
+  { t: '가로축 = 사람 수', hl: 'axis', html: '가로 방향은 <b>사람 수</b>예요.<br>가운데에서 <b>바깥쪽으로 막대가 길수록</b> 그 나이대의 사람이 많다는 뜻이에요.<br>아래쪽 눈금의 ‘100만’은 100만 명이라는 뜻이에요.' },
+  { t: '왼쪽은 남자, 오른쪽은 여자', hl: 'male', hl2: 'female', html: '가운데를 기준으로 <b>👨 왼쪽은 남자</b>, <b>👩 오른쪽은 여자</b>예요.<br>양쪽을 비교하면 어느 나이대에 남자 또는 여자가 더 많은지 알 수 있어요. 노인 쪽을 보면 여자가 더 많지요? 여자가 평균적으로 더 오래 살기 때문이에요.' },
+  { t: '막대 하나가 뜻하는 것', hl: 'dim', bar: [8, 'm'], html: `막대 <b>하나</b>는 ‘<b>그 나이대의 남자(또는 여자) 수</b>’예요.<br>지금 반짝이는 막대는 <b>40~44세 남자 ${manName(L.m[8])}</b>을 나타내요.<br>👆 다른 막대도 눌러서 몇 명인지 확인해 보세요!` },
+  { t: '색깔로 나누는 세 연령층', hl: 'only-y', colors: true, html: `나이에 따라 사람들을 세 무리로 나누고, 색깔로 구분했어요.<ul style="padding-left:1.2rem;margin:.3rem 0"><li><b style="color:var(--y)">초록</b> 0~14세 ${md('[[유소년층]]')}: 어린이와 청소년 초반</li><li><b style="color:var(--w)">파랑</b> 15~64세 ${md('[[생산 가능 인구]]')}: 일해서 돈을 벌 수 있는 나이의 사람들</li><li><b style="color:var(--o)">보라</b> 65세 이상 ${md('[[노년층]]')}: 어르신</li></ul>` },
+  { t: '전체 모양을 보면 알 수 있어요', hl: '', html: `막대들이 모여 만든 <b>전체 모양</b>을 보면 ${md('[[출생률]]')}(아기가 태어나는 비율), ${md('[[사망률]]')}(세상을 떠나는 사람의 비율), ${md('[[인구 이동]]')}(사람들이 사는 곳을 옮기는 것)을 짐작할 수 있어요.<br>모양에 따라 <b>5가지 유형</b>이 있어요. 함께 알아볼까요?<br><button class="btn blue" style="margin-top:.6rem" onclick="openTab('types')">🃏 유형 카드 보러 가기</button>` }
+];
+function initLearn() {
+  learnPyr = new Pyramid($('#learnPyr'), { max: K_MAX, ticks: K_TICKS, fmt: kFmt, label: '2020년 우리나라 인구 피라미드',
+    onBar: (i, s) => { learnPyr.hot(i, s); $('#learnInfo').innerHTML = `📊 <b>${ageName(i)} ${s === 'm' ? '남자' : '여자'}</b>: ${manName(L[s][i])}`; } });
+  $('#learnLegend').innerHTML = LEGEND;
+  $('#stepDots').innerHTML = STEPS.map((_, i) => `<button aria-label="${i + 1}단계"></button>`).join('');
+  $$('#stepDots button').forEach((b, i) => b.addEventListener('click', () => { stopAuto(); goStep(i); }));
+  $('#prevStep').onclick = () => { stopAuto(); goStep(learnStep - 1); };
+  $('#nextStep').onclick = () => { stopAuto(); goStep(learnStep + 1); };
+  $('#autoStep').onclick = () => { if (autoTimer) { stopAuto(); return; } $('#autoStep').textContent = '⏸ 멈추기'; goStep(learnStep >= STEPS.length - 1 ? 0 : learnStep); autoTimer = setInterval(() => { if (learnStep >= STEPS.length - 1) stopAuto(); else goStep(learnStep + 1); }, 6000); };
+  $('#glossList').innerHTML = Object.entries(GLOSS).map(([k, v]) => `<div><b>${esc(k)}</b><br>${esc(v)}</div>`).join('');
+  goStep(0);
+}
+function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } const b = $('#autoStep'); if (b) b.textContent = '▶ 자동으로 보기'; }
+function goStep(n) {
+  n = Math.max(0, Math.min(STEPS.length - 1, n)); learnStep = n;
+  const s = STEPS[n];
+  clearInterval(colorTimer); colorTimer = null;
+  $('#stepBox').innerHTML = `<span class="step-num">${n + 1} / ${STEPS.length}</span><h2>${s.t}</h2><div>${s.html}</div>`;
+  $$('#stepDots button').forEach((b, i) => b.classList.toggle('on', i === n));
+  $('#prevStep').disabled = n === 0; $('#nextStep').disabled = n === STEPS.length - 1;
+  learnPyr.hot(null);
+  if (n === 0) { learnPyr.set(Array(BANDS).fill(0), Array(BANDS).fill(0), false); learnPyr.set(L.m, L.f, true, 1400); }
+  else learnPyr.set(L.m, L.f, false);
+  learnPyr.hl(s.hl);
+  if (s.hl2) { let t = 0; colorTimer = setInterval(() => learnPyr.hl(++t % 2 ? s.hl2 : s.hl), 1500); }
+  if (s.bar) { learnPyr.hot(s.bar[0], s.bar[1]); $('#learnInfo').innerHTML = `📊 <b>${ageName(s.bar[0])} 남자</b>: ${manName(L.m[s.bar[0]])}`; }
+  if (s.colors) { const seq = ['only-y', 'only-w', 'only-o', '']; let t = 0; colorTimer = setInterval(() => learnPyr.hl(seq[++t % 4]), 1600); }
+}
+
+/* ================= 2. 유형 카드 ================= */
+function initTypes() {
+  $('#typeCards').innerHTML = TYPE_KEYS.map(k => { const T = TYPES[k];
+    return `<button class="tcard" style="--tc:${T.color}" data-k="${k}"><div class="mini" id="mini-${k}"></div><div class="tname">${T.emoji} ${T.name}</div><div class="talias">(${T.alias})</div><div>${T.short}</div><span class="more">자세히 보기 ▶</span></button>`; }).join('');
+  TYPE_KEYS.forEach(k => { const d = typeData(k); new Pyramid($('#mini-' + k), { compact: true, max: d.max, label: TYPES[k].name + ' 그래프' }).set(d.m, d.f, true, 900); });
+  $$('.tcard').forEach(b => b.addEventListener('click', () => showType(b.dataset.k)));
+  $('#typesLegend').innerHTML = LEGEND;
+}
+function showType(k) {
+  const T = TYPES[k], idx = TYPE_KEYS.indexOf(k), d = typeData(k), s = shares(d.m, d.f);
+  const prev = TYPE_KEYS[(idx + 4) % 5], next = TYPE_KEYS[(idx + 1) % 5];
+  openModal(`<div style="--tc:${T.color}">
+    <div class="detail-head"><span class="big-emoji">${T.emoji}</span><div><h2>${T.name} <small>(${T.alias})</small></h2><div style="font-weight:700">${T.short}</div></div></div>
+    <div class="grid2">
+      <div class="card"><div class="fact" style="margin:0 0 .4rem"><h3>① 모양 그래프</h3></div><div id="detailPyr"></div><div class="legend">${LEGEND}</div>
+        <p style="margin-top:.6rem;font-weight:700">이 그래프의 연령층 비율</p><div class="sbar">${shareBar(s)}</div></div>
+      <div>
+        <div class="fact"><h3>② 이름의 뜻</h3><p>${md(T.meaning)}</p></div>
+        <div class="fact"><h3>③ 출생률·사망률 특징</h3><div>${T.pills.map(p => `<span class="pill ${p[0]}">${p[1]}</span>`).join('')}</div><p>${md(T.rate)}</p></div>
+        <div class="fact"><h3>④ 연령층 비율 특징</h3><p>${md(T.ratio)}</p><p class="muted">이 그래프에서는 어린이 ${s.Y}% · 일하는 나이 ${s.W}% · 노인 ${s.O}%</p></div>
+        <div class="fact"><h3>⑤ 주로 나타나는 지역·시기</h3><p>${md(T.where)}</p></div>
+        <div class="fact"><h3>⑥ 앞으로 생길 수 있는 문제·변화</h3><ul>${T.future.map(f => `<li>${md(f)}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+    <div class="row" style="justify-content:space-between;margin-top:.8rem">
+      <button class="btn ghost" id="dPrev">◀ ${TYPES[prev].emoji} ${TYPES[prev].name}</button>
+      <button class="btn ghost" id="dNext">${TYPES[next].emoji} ${TYPES[next].name} ▶</button>
+    </div></div>`);
+  new Pyramid($('#detailPyr'), { max: d.max, label: T.name + ' 인구 피라미드' }).set(d.m, d.f, true, 900);
+  $('#dPrev').onclick = () => showType(prev); $('#dNext').onclick = () => showType(next);
+}
+
+/* ================= 3. 우리나라의 변화 ================= */
+let koreaPyr, kIdx = 0, playTimer = null;
+function initKorea() {
+  koreaPyr = new Pyramid($('#koreaPyr'), { max: K_MAX, ticks: K_TICKS, fmt: kFmt, label: '우리나라 인구 피라미드',
+    onBar: (i, s) => { koreaPyr.hot(i, s); $('#koreaInfo').innerHTML = `📊 ${KOREA[kIdx].year}년 <b>${ageName(i)} ${s === 'm' ? '남자' : '여자'}</b>: ${manName(KOREA[kIdx][s][i])}`; } });
+  $('#koreaLegend').innerHTML = LEGEND;
+  $('#kYearBtns').innerHTML = KOREA.map((k, i) => `<button class="btn ghost" data-i="${i}">${k.year}</button>`).join('');
+  $$('#kYearBtns button').forEach(b => b.addEventListener('click', () => { stopPlay(); showYear(+b.dataset.i); }));
+  $('#kSlider').addEventListener('input', e => { stopPlay(); showYear(+e.target.value); });
+  $('#kReveal').onclick = () => { $('#kA').hidden = false; $('#kReveal').hidden = true; };
+  $('#kPlay').onclick = () => {
+    if (playTimer) { stopPlay(); return; }
+    $('#kPlay').textContent = '⏸ 멈추기';
+    showYear(0);
+    playTimer = setInterval(() => { if (kIdx >= KOREA.length - 1) stopPlay(); else showYear(kIdx + 1); }, 3500);
+  };
+  showYear(0);
+}
+function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; } const b = $('#kPlay'); if (b) b.textContent = '▶ 재생'; }
+function showYear(i) {
+  kIdx = i; const k = KOREA[i], s = shares(k.m, k.f);
+  koreaPyr.hot(null); koreaPyr.set(k.m, k.f, true, 1100);
+  $('#kSlider').value = i;
+  $$('#kYearBtns button').forEach((b, j) => b.classList.toggle('on', j === i));
+  $('#kYear').textContent = k.year + '년';
+  $('#kLabel').textContent = k.label;
+  $('#kTotal').textContent = `약 ${(Math.round(s.total / 100) * 10).toLocaleString()}만 명`;
+  $('#kBar').innerHTML = shareBar(s);
+  $('#kNote').innerHTML = `${k.note}<br><span class="muted">어린이 ${s.Y}% · 일하는 나이 ${s.W}% · 노인 ${s.O}%${s.O >= 20 ? ' → ' + md('[[초고령 사회]]') : ''}</span>`;
+  $('#kQ').textContent = k.q; $('#kA').innerHTML = '💡 ' + k.a; $('#kA').hidden = true; $('#kReveal').hidden = false;
+  $('#koreaInfo').innerHTML = '👆 막대를 누르면 그 나이대의 사람 수가 나와요.';
+}
+
+/* ================= 4. 내가 만드는 피라미드 ================= */
+const BGROUPS = [
+  { label: '0~14세', bands: [0, 1, 2], g: 'y' }, { label: '15~29세', bands: [3, 4, 5], g: 'w' },
+  { label: '30~44세', bands: [6, 7, 8], g: 'w' }, { label: '45~64세', bands: [9, 10, 11, 12], g: 'w' },
+  { label: '65~79세', bands: [13, 14, 15], g: 'o' }, { label: '80세 이상', bands: [16, 17], g: 'o' }
+];
+const groupAvg = arr => BGROUPS.map(g => g.bands.reduce((s, i) => s + arr[i], 0) / g.bands.length);
+const norm = v => { const mx = Math.max(...v); return mx > 0 ? v.map(x => x / mx) : v.map(() => 0); };
+const TGV = {}; TYPE_KEYS.forEach(k => TGV[k] = norm(groupAvg(TYPES[k].tpl)));
+// 모양 판단: 6개 나이 묶음의 막대 길이 비율을 각 유형의 틀과 비교해 가장 가까운 것을 고름
+// (맨 아래 0~14세는 출생률을 보여 주는 중요한 부분이라 무게를 더 주고, 80세 이상은 덜 줌)
+const CW = [2, 1, 1, 1, 1, 0.6];
+function classify(g) {
+  const v = norm(g);
+  return TYPE_KEYS.map(k => { const d = Math.sqrt(v.reduce((s, x, i) => s + CW[i] * (x - TGV[k][i]) ** 2, 0)); return { k, d, sim: Math.max(0, Math.round(100 * (1 - d / 1.8))) }; }).sort((a, b) => a.d - b.d);
+}
+const REASON = {
+  pyramid: '아래쪽 막대가 가장 길고 위로 갈수록 짧아져서 뾰족한 모양이에요. 아기가 많이 태어나고(출생률↑) 일찍 세상을 떠나는 사람도 많을 때(사망률↑) 생기는 모양이에요.',
+  bell: '아래부터 가운데까지 막대 길이가 비슷하고, 위쪽만 둥글게 좁아져요. 출생률과 사망률이 모두 낮을 때 나타나요.',
+  spindle: '맨 아래(0~14세)가 가운데보다 좁고 가운데가 불룩해요. 아기가 적게 태어나는 저출산과 노인이 늘어나는 고령화를 보여 줘요.',
+  star: '15~44세 막대가 양옆으로 툭 튀어나왔어요. 일자리를 찾아 젊은 사람이 많이 들어오는 도시에서 나타나요.',
+  gourd: '가운데(15~44세)가 잘록하고 위아래가 넓어요. 젊은 사람들이 도시로 떠난 농촌에서 나타나요.'
+};
+// 미션: 2020년 모양에서 출발해 2050년 모습을 예상해서 만들기
+const K2020 = KOREA.find(k => k.year === 2020);
+const START_2020 = norm(groupAvg(K2020.m)).map(x => Math.round(x * 90));
+let buildPyr, bVals = [...START_2020];
+// ‘생각해 봅시다’ 질문 (화면 글은 HTML의 label, PDF 제목은 아래 title)
+const ANS_FIELDS = [
+  { id: 'bReason', key: 'reason', num: '①', title: '① 내가 이렇게 만든 까닭' },
+  { id: 'bProblem', key: 'problem', num: '②', title: '② 이런 형태의 인구 구조에서 생길 수 있는 문제는 무엇일까요?' },
+  { id: 'bSolution', key: 'solution', num: '③', title: '③ 더 살기 좋은 나라가 되려면 어떻게 해야 할까요?' }
+];
+function initBuild() {
+  const draft = store.get(KEY.build, null);
+  if (draft && Array.isArray(draft.vals) && draft.vals.length === 6) bVals = draft.vals;
+  new Pyramid($('#refPyr'), { compact: true, max: K_MAX, label: '2020년 우리나라 인구 피라미드' }).set(K2020.m, K2020.f, false);
+  buildPyr = new Pyramid($('#buildPyr'), { max: 100, label: '내가 예상한 2050년 우리나라 인구 피라미드' });
+  $('#buildLegend').innerHTML = LEGEND;
+  $('#sliders').innerHTML = BGROUPS.map((g, i) => `<div class="slider-row"><label for="sl${i}"><i style="background:var(--${g.g})"></i>${g.label}</label><input type="range" id="sl${i}" min="0" max="100" step="1" value="${bVals[i]}"><output id="out${i}">${bVals[i]}</output></div>`).join('');
+  BGROUPS.forEach((g, i) => $('#sl' + i).addEventListener('input', e => { bVals[i] = +e.target.value; updateBuild(false); saveBuild(); }));
+  $('#bFrom2020').onclick = () => {
+    bVals = [...START_2020];
+    bVals.forEach((v, i) => { $('#sl' + i).value = v; });
+    updateBuild(true); saveBuild();
+  };
+  if (draft) { $('#bName').value = draft.name || ''; ANS_FIELDS.forEach(f => { $('#' + f.id).value = draft[f.key] || ''; }); }
+  const count = () => $$('.cnt').forEach(c => { const t = $('#' + c.dataset.for); c.textContent = `${t.value.length} / ${t.maxLength}`; });
+  ['bName', ...ANS_FIELDS.map(f => f.id)].forEach(id => $('#' + id).addEventListener('input', () => { count(); saveBuild(); }));
+  count();
+  $('#reasonForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('#bName').value.trim(), st = $('#bStatus'), ans = {};
+    const warn = (msg, el) => { st.style.color = 'var(--bad)'; st.textContent = msg; if (el) el.focus(); };
+    if (!name) return warn('✋ 이름을 써 주세요.', $('#bName'));
+    for (const f of ANS_FIELDS) {
+      ans[f.key] = $('#' + f.id).value.trim();
+      if (ans[f.key].length < 10) return warn(`✋ ${f.num} 질문의 답을 조금 더 자세히 써 주세요. (10글자 이상)`, $('#' + f.id));
+    }
+    if (bVals.every(v => v === 0)) return warn('✋ 먼저 막대를 만들어 주세요.');
+    try {
+      downloadBuildPdf(name, ans);
+      st.style.color = 'var(--ok)'; st.textContent = '🎉 완성! 결과지를 만들었어요.';
+    } catch (err) {
+      st.style.color = 'var(--bad)'; st.textContent = '😢 PDF를 만들지 못했어요. 다시 눌러 보세요.';
+    }
+  });
+  updateBuild(true);
+}
+function saveBuild() {
+  const d = { vals: bVals, name: $('#bName').value };
+  ANS_FIELDS.forEach(f => { d[f.key] = $('#' + f.id).value; });
+  store.set(KEY.build, d);
+}
+
+/* ---- 한 쪽짜리 PDF 만들기: 캔버스(A4)에 그린 뒤 JPEG 그림으로 PDF에 넣음 (외부 라이브러리·서버 없음) ---- */
+const FONT = '"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif';
+function wrapText(ctx, text, maxW) {
+  const out = [];
+  text.split('\n').forEach(para => {
+    let line = '';
+    for (const ch of para) {
+      const t = line + ch;
+      if (ctx.measureText(t).width > maxW && line) {
+        const sp = line.lastIndexOf(' ');
+        if (sp > 0 && ch !== ' ') { out.push(line.slice(0, sp)); line = line.slice(sp + 1) + ch; }
+        else { out.push(line); line = ch === ' ' ? '' : ch; }
+      } else line = t;
+    }
+    out.push(line);
+  });
+  return out;
+}
+function rrect(x, X, Y, W, H, r) { x.beginPath(); if (x.roundRect) x.roundRect(X, Y, W, H, r); else x.rect(X, Y, W, H); }
+function drawBuildPage(name, ans) {
+  const W = 1240, H = 1754, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d'), F = (s, w = 500) => `${w} ${s}px ${FONT}`;
+  const m = Array(BANDS).fill(0);
+  BGROUPS.forEach((g, i) => g.bands.forEach(b => m[b] = bVals[i]));
+  const s = shares(m, m), best = classify(bVals)[0], T = TYPES[best.k], d = new Date();
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+  x.textBaseline = 'middle';
+  // 제목
+  x.fillStyle = '#FF7A45'; x.fillRect(0, 0, W, 120);
+  x.fillStyle = '#fff'; x.font = F(46, 800); x.fillText('2050년 우리나라 인구 피라미드 예상하기', 70, 62);
+  x.fillStyle = '#2B2D42'; x.font = F(28, 700); x.fillText('이름: ' + name, 70, 165);
+  x.textAlign = 'right'; x.fillText(`${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`, W - 70, 165); x.textAlign = 'left';
+  x.fillStyle = '#585C70'; x.font = F(21);
+  x.fillText('미션: 2020년 우리나라 인구 피라미드를 참고하여 30년 뒤인 2050년의 모습을 예상해 막대 길이를 조절했어요.', 70, 208);
+  // 그래프
+  const top = 290, bh = 24, cx = W / 2, gap = 50, side = 440, bot = top + bh * BANDS;
+  [[0, 3, '#EEF8F1'], [3, 13, '#EEF4FC'], [13, 18, '#F6EFFC']].forEach(([a, b, col]) => { x.fillStyle = col; rrect(x, 60, top + (BANDS - b) * bh, W - 120, (b - a) * bh, 10); x.fill(); });
+  x.fillStyle = '#2B2D42'; x.font = F(26, 800); x.textAlign = 'center';
+  x.fillText('남자', cx - gap - side / 2, top - 26); x.fillText('여자', cx + gap + side / 2, top - 26);
+  x.font = F(18, 800); x.fillText('나이(세)', cx, top - 26);
+  for (let i = 0; i < BANDS; i++) {
+    const y = top + (BANDS - 1 - i) * bh, w = Math.min(1, m[i] / 100) * side, g = grp(i);
+    x.fillStyle = COLORS[g][0]; rrect(x, cx - gap - w, y + 2, w, bh - 4, 4); x.fill();
+    x.fillStyle = COLORS[g][1]; rrect(x, cx + gap, y + 2, w, bh - 4, 4); x.fill();
+    x.fillStyle = '#4A4E63'; x.font = F(16, 700); x.fillText(AGE[i], cx, y + bh / 2);
+  }
+  x.strokeStyle = '#9AA0B4'; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - gap - side, bot + 5); x.lineTo(cx - gap, bot + 5); x.moveTo(cx + gap, bot + 5); x.lineTo(cx + gap + side, bot + 5); x.stroke();
+  x.fillStyle = '#585C70'; x.font = F(16, 600); x.fillText('◀ 바깥쪽일수록 많아요', cx - gap - side / 2, bot + 24); x.fillText('바깥쪽일수록 많아요 ▶', cx + gap + side / 2, bot + 24);
+  // 범례
+  x.textAlign = 'left'; x.font = F(19, 700);
+  let lx = 110;
+  [['y', '0~14세 유소년층'], ['w', '15~64세 생산 가능 인구'], ['o', '65세 이상 노년층']].forEach(([g, t]) => { x.fillStyle = COLORS[g][0]; x.fillRect(lx, bot + 44, 22, 22); x.fillStyle = '#2B2D42'; x.fillText(t, lx + 32, bot + 56); lx += x.measureText(t).width + 80; });
+  // 결과
+  let y = bot + 88;
+  x.strokeStyle = T.color; x.lineWidth = 4; rrect(x, 70, y, W - 140, 170, 18); x.stroke();
+  x.fillStyle = T.color; x.font = F(28, 800); x.fillText(`내가 만든 모양은 ‘${T.name}(${T.alias})’에 가장 가까워요`, 100, y + 38);
+  const bx = 100, bw = W - 200, by = y + 66;
+  [[s.Y, 'y', '0~14세'], [s.W, 'w', '15~64세'], [s.O, 'o', '65세 이상']].reduce((px, [v, g, t]) => {
+    const w = bw * v / 100; x.fillStyle = COLORS[g][0]; x.fillRect(px, by, w, 44);
+    x.fillStyle = '#fff'; x.font = F(20, 800); x.textAlign = 'center';
+    const lb = [`${t} ${v}%`, `${v}%`].find(l => x.measureText(l).width < w - 12);
+    if (lb) x.fillText(lb, px + w / 2, by + 23);
+    x.textAlign = 'left';
+    return px + w;
+  }, bx);
+  x.fillStyle = '#585C70'; x.font = F(18, 600);
+  x.fillText('막대 길이: ' + BGROUPS.map((g, i) => `${g.label} ${bVals[i]}`).join(' · '), 100, y + 140);
+  // 생각해 봅시다 (질문 3개)
+  y += 190;
+  x.fillStyle = '#2B2D42'; x.font = F(28, 800); x.fillText('생각해 봅시다', 70, y + 16);
+  y += 40;
+  const gapB = 14, boxH = (H - 80 - y - gapB * 2) / 3, lineMax = W - 200;
+  ANS_FIELDS.forEach((f, k) => {
+    const by2 = y + k * (boxH + gapB);
+    x.strokeStyle = '#ECE3D2'; x.lineWidth = 3; x.fillStyle = '#FFFBF3'; rrect(x, 70, by2, W - 140, boxH, 16); x.fill(); x.stroke();
+    x.fillStyle = '#E0581F'; x.font = F(22, 800); x.fillText(f.title, 100, by2 + 32);
+    let size = 23, lines;
+    for (; size >= 15; size -= 1) { x.font = F(size, 500); lines = wrapText(x, ans[f.key], lineMax); if (lines.length * size * 1.55 <= boxH - 70) break; }
+    const fit = Math.max(1, Math.floor((boxH - 70) / (size * 1.55)));
+    if (lines.length > fit) { lines = lines.slice(0, fit); lines[fit - 1] = lines[fit - 1].slice(0, -1) + '…'; }
+    x.fillStyle = '#2B2D42';
+    lines.forEach((l, i) => x.fillText(l, 100, by2 + 70 + size * 0.6 + i * size * 1.55));
+  });
+  // 바닥글
+  x.fillStyle = '#9AA0B4'; x.font = F(18, 500); x.textAlign = 'center';
+  x.fillText('인구 피라미드 탐험대 · 막대 길이는 학생이 예상해서 만든 값이에요.', W / 2, H - 45);
+  return c;
+}
+function jpegToPdf(dataUrl, pxW, pxH) {
+  const bin = atob(dataUrl.split(',')[1]), img = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+  const PW = 595.28, PH = 841.89, parts = [], offs = [];
+  let pos = 0;
+  const push = p => { const b = typeof p === 'string' ? new TextEncoder().encode(p) : p; parts.push(b); pos += b.length; };
+  const obj = (n, body) => { offs[n] = pos; push(`${n} 0 obj\n${body}\nendobj\n`); };
+  push('%PDF-1.4\n'); push(new Uint8Array([37, 226, 227, 207, 211, 10]));
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+  offs[4] = pos;
+  push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${pxW} /Height ${pxH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${img.length} >>\nstream\n`);
+  push(img); push('\nendstream\nendobj\n');
+  const content = `q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
+  obj(5, `<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+  const xref = pos;
+  push(`xref\n0 6\n0000000000 65535 f \n${offs.slice(1).map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('')}trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(parts, { type: 'application/pdf' });
+}
+// 자동 내려받기가 막히는 환경(미리 보기 창, 일부 학교 관리 크롬북 등)을 위해
+// 직접 누르는 내려받기 링크 · 새 창에서 열기 · 인쇄(PDF로 저장)도 함께 보여 줌
+let pdfUrl = null;
+function downloadBuildPdf(name, ans) {
+  const c = drawBuildPage(name, ans), jpg = c.toDataURL('image/jpeg', 0.92);
+  const blob = jpegToPdf(jpg, c.width, c.height);
+  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  pdfUrl = URL.createObjectURL(blob);
+  const file = `2050년_인구피라미드_${name.replace(/[\\/:*?"<>|\s]+/g, '_')}.pdf`;
+  $('#bDl').href = pdfUrl; $('#bDl').download = file;
+  $('#bOpen').href = pdfUrl;
+  $('#bPreview').src = jpg;
+  let pa = $('#printArea');
+  if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; pa.innerHTML = '<img alt="">'; document.body.appendChild(pa); }
+  $('img', pa).src = jpg;
+  $('#bPrint').onclick = () => { document.body.classList.add('print-sheet'); window.print(); };
+  $('#bDone').hidden = false;
+  try { const a = document.createElement('a'); a.href = pdfUrl; a.download = file; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
+  $('#bDone').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+window.addEventListener('afterprint', () => document.body.classList.remove('print-sheet'));
+function updateBuild(anim) {
+  bVals.forEach((v, i) => $('#out' + i).textContent = v);
+  const m = Array(BANDS).fill(0);
+  BGROUPS.forEach((g, i) => g.bands.forEach(b => m[b] = bVals[i]));
+  buildPyr.set(m, m, anim, 500);
+  const s = shares(m, m);
+  $('#bBar').innerHTML = s.total ? shareBar(s) : '';
+  const box = $('#bResult');
+  if (bVals.every(v => v === 0)) { box.style.setProperty('--tc', '#999'); box.innerHTML = '<div class="rt">막대가 하나도 없어요!</div><p>슬라이더를 오른쪽으로 움직여 막대를 만들어 보세요.</p>'; return; }
+  const r = classify(bVals), best = r[0], T = TYPES[best.k], g = bVals;
+  const lines = [REASON[best.k]];
+  lines.push(`어린이(0~14세) <b>${s.Y}%</b>, 일하는 나이(15~64세) <b>${s.W}%</b>, 노인(65세 이상) <b>${s.O}%</b>예요.`);
+  if (g[0] > g[1] * 1.1) lines.push('맨 아래(0~14세)가 바로 위보다 넓어요 → 아기가 많이 태어나고 있어요.');
+  else if (g[0] < g[1] * 0.9) lines.push('맨 아래(0~14세)가 바로 위보다 좁아요 → 아기가 점점 적게 태어나고 있어요.');
+  if (Math.min(g[1], g[2]) < 0.75 * Math.min(g[0], g[4]) && g[4] > 0) lines.push('15~44세가 위아래보다 잘록해요 → 젊은 사람이 빠져나간 모습이에요.');
+  if (g[1] > 1.3 * g[0] && g[1] > 1.3 * g[3]) lines.push('15~29세가 툭 튀어나왔어요 → 젊은 사람이 많이 들어온 모습이에요.');
+  if (s.O >= 20) lines.push(`노인 비율이 20%가 넘어요 → ${md('[[초고령 사회]]')}예요.`);
+  const second = r[1];
+  const close = best.sim - second.sim <= 6 ? `<p class="muted">🤏 <b>${TYPES[second.k].name}</b>과도 꽤 비슷해요. 막대를 조금 더 바꿔 보세요!</p>` : '';
+  box.style.setProperty('--tc', T.color);
+  box.innerHTML = `<div class="rt">${T.emoji} 내가 만든 모양은 <u>${T.name}</u>(${T.alias})에 가장 가까워요!</div>
+    <ul style="padding-left:1.2rem;margin:.4rem 0">${lines.map(l => `<li>${l}</li>`).join('')}</ul>${close}
+    <p style="font-weight:800;margin:.6rem 0 .2rem">유형별 닮은 정도</p>
+    ${r.map(x => `<div class="simrow"><span>${TYPES[x.k].emoji} ${TYPES[x.k].name}</span><div class="simbar"><span style="width:${x.sim}%;background:${TYPES[x.k].color}"></span></div><span>${x.sim}%</span></div>`).join('')}`;
+}
+
+/* ================= 5. 퀴즈 ================= */
+// kind: graph(그래프 보고 고르기) / desc(특징 설명) / situ(상황 문제) / concept(개념)
+// answer: 유형 키(pyramid, bell, spindle, star, gourd) 또는 options 배열 안의 정답 글자
+const BANK = [
+  { kind: 'graph', graph: 'pyramid', text: '이 인구 피라미드는 어떤 유형일까요?', answer: 'pyramid', explain: '아래(어린이)가 가장 넓고 위로 갈수록 뾰족하니 피라미드형이에요. 출생률과 사망률이 모두 높을 때 나타나요.' },
+  { kind: 'graph', graph: 'bell', text: '이 인구 피라미드는 어떤 유형일까요?', answer: 'bell', explain: '아래부터 가운데까지 폭이 비슷하고 위만 둥글게 좁아지니 종형이에요.' },
+  { kind: 'graph', graph: 'spindle', text: '이 인구 피라미드는 어떤 유형일까요?', answer: 'spindle', explain: '아래가 좁고 가운데가 불룩한 항아리 모양이니 방추형이에요. 저출산·고령화를 보여 줘요.' },
+  { kind: 'graph', graph: 'star', text: '이 인구 피라미드는 어떤 유형일까요?', answer: 'star', explain: '20~30대가 양옆으로 툭 튀어나왔으니 별형(도시형)이에요.' },
+  { kind: 'graph', graph: 'gourd', text: '이 인구 피라미드는 어떤 유형일까요?', answer: 'gourd', explain: '가운데(청장년층)가 잘록하고 노인이 많으니 표주박형(농촌형)이에요.' },
+  { kind: 'desc', text: '출생률과 사망률이 모두 높아서 어린이가 아주 많고 노인은 적어요. 어떤 유형일까요?', answer: 'pyramid', explain: '출생률·사망률이 모두 높으면 아래가 넓고 위가 뾰족한 피라미드형이 돼요.' },
+  { kind: 'desc', text: '출생률과 사망률이 모두 낮아서 연령층이 비교적 고르게 퍼져 있어요. 어떤 유형일까요?', answer: 'bell', explain: '출생률·사망률이 모두 낮고 고르게 분포하면 종형(인구 정체형)이에요.' },
+  { kind: 'desc', text: '출생률이 사망률보다 낮아 인구가 줄어들고, 저출산·고령화가 나타나요. 어떤 유형일까요?', answer: 'spindle', explain: '아기가 적게 태어나 아래가 좁아지고 노인이 늘어나는 방추형(인구 감소형)이에요.' },
+  { kind: 'desc', text: '15~64세, 특히 20~30대가 매우 많고 어린이와 노인은 비교적 적어요. 어떤 유형일까요?', answer: 'star', explain: '젊은 사람이 일자리를 찾아 몰려든 별형(도시형)이에요.' },
+  { kind: 'desc', text: '15~64세가 적어 가운데가 잘록하고, 노년층이 많아요. 어떤 유형일까요?', answer: 'gourd', explain: '청장년층이 빠져나가 가운데가 잘록한 표주박형(농촌형)이에요.' },
+  { kind: 'desc', text: '아래가 좁고 가운데가 불룩한 항아리 모양이에요. 어떤 유형일까요?', answer: 'spindle', explain: '항아리 모양은 방추형의 다른 이름(항아리형)이에요.' },
+  { kind: 'situ', text: '젊은 사람들이 일자리를 찾아 도시로 떠난 시골 마을의 인구 피라미드는?', answer: 'gourd', explain: '젊은 사람이 빠져나가면(전출) 가운데가 잘록해져 표주박형이 돼요.' },
+  { kind: 'situ', text: '큰 회사와 공장이 많이 생겨 전국에서 젊은 직장인이 이사 온 신도시의 인구 피라미드는?', answer: 'star', explain: '젊은 사람이 많이 들어오면(전입) 20~30대가 툭 튀어나온 별형이 돼요.' },
+  { kind: 'situ', text: '아기는 많이 태어나지만 병원이 부족해 오래 사는 사람이 적은 나라의 인구 피라미드는?', answer: 'pyramid', explain: '출생률과 사망률이 모두 높은 나라이므로 피라미드형이에요.' },
+  { kind: 'situ', text: '2020년대 우리나라처럼 아기는 아주 적게 태어나고 노인은 늘어나는 나라의 인구 피라미드는?', answer: 'spindle', explain: '저출산·고령화가 함께 나타나는 방추형이에요.' },
+  { kind: 'situ', text: '태어나는 아기 수가 해마다 비슷하게 유지되고, 대부분의 사람이 오래 사는 나라의 인구 피라미드는?', answer: 'bell', explain: '출생률·사망률이 모두 낮고 안정적이면 종형이에요.' },
+  { kind: 'situ', text: '학교는 문을 닫고 빈집이 늘었으며, 마을 사람 대부분이 할머니·할아버지인 산골 마을의 인구 피라미드는?', answer: 'gourd', explain: '청장년층이 적고 노년층이 많은 농촌형, 표주박형이에요.' },
+  { kind: 'concept', text: '인구 피라미드에서 세로축(위아래 방향)은 무엇을 나타낼까요?', options: ['나이', '사람 수', '남자와 여자', '연도'], answer: '나이', explain: '세로축은 나이예요. 아래로 갈수록 어리고 위로 갈수록 나이가 많아요.' },
+  { kind: 'concept', text: '65세 이상의 어르신을 부르는 말은 무엇일까요?', options: ['유소년층', '생산 가능 인구', '노년층', '청소년층'], answer: '노년층', explain: '0~14세는 유소년층, 15~64세는 생산 가능 인구, 65세 이상은 노년층이에요.' },
+  { kind: 'concept', text: '이 앱의 인구 피라미드에서 왼쪽 막대는 누구를 나타낼까요?', options: ['남자', '여자', '어린이', '어르신'], answer: '남자', explain: '보통 왼쪽은 남자, 오른쪽은 여자를 나타내요.' },
+  { kind: 'concept', text: '피라미드형 나라에서 앞으로 생기기 쉬운 문제는 무엇일까요?', options: ['학교와 일자리가 모자라요', '일할 사람이 모자라요', '어르신 돌봄 부담이 커져요', '태어나는 아기가 사라져요'], answer: '학교와 일자리가 모자라요', explain: '어린이가 많아 인구가 빠르게 늘면 학교, 일자리, 집, 식량이 모자랄 수 있어요.' }
+];
+let quiz = null, showKeys = false;
+function initQuiz() { quizHome(); }
+function quizRecordsHTML() {
+  const recs = store.get(KEY.quiz, []);
+  if (!recs.length) return '<p class="muted">아직 기록이 없어요.</p>';
+  return `<ul class="rec-list">${recs.slice(-5).reverse().map(r => `<li>📅 ${esc(r.date)} — <b>${r.score} / ${r.total}점</b></li>`).join('')}</ul>`;
+}
+function quizHome() {
+  $('#quizBox').innerHTML = `<h2>✅ 인구 피라미드 퀴즈</h2>
+    <p>그래프 보고 고르기, 특징 읽고 고르기, 상황 문제 등 <b>10문제</b>가 무작위 순서로 나와요.</p>
+    <button class="btn primary" id="qStart" style="font-size:1.15rem;padding:.8rem 1.6rem">🚀 퀴즈 시작</button>
+    <h3 style="margin-top:1.2rem">📒 이 기기의 최근 기록</h3>${quizRecordsHTML()}`;
+  $('#qStart').onclick = () => startQuiz();
+}
+function prepQ(q) {
+  const c = Object.assign({}, q);
+  c.opts = q.options ? shuffle(q.options) : shuffle(TYPE_KEYS);
+  if (q.graph) c.data = typeData(q.graph, 0.07);
+  return c;
+}
+function startQuiz(list) {
+  const retry = !!list;
+  if (!list) {
+    const by = k => shuffle(BANK.filter(q => q.kind === k));
+    list = shuffle([...by('graph').slice(0, 3), ...by('desc').slice(0, 3), ...by('situ').slice(0, 3), ...by('concept').slice(0, 1)]);
+  }
+  quiz = { list: list.map(prepQ), idx: 0, results: [], retry };
+  renderQ();
+}
+const optLabel = (q, o) => q.options ? esc(o) : `${TYPES[o].emoji} ${TYPES[o].name}<small>${TYPES[o].alias}</small>`;
+const ansText = (q, o) => q.options ? o : `${TYPES[o].name}(${TYPES[o].alias})`;
+function renderQ() {
+  const q = quiz.list[quiz.idx], n = quiz.list.length;
+  const kindName = { graph: '📊 그래프 보고 고르기', desc: '📝 특징 읽고 고르기', situ: '🏘️ 상황 문제', concept: '💡 개념 문제' }[q.kind];
+  $('#quizBox').innerHTML = `<div class="qhead"><b>${kindName}</b><b>${quiz.idx + 1} / ${n}</b></div>
+    <div class="progress"><span style="width:${quiz.idx / n * 100}%"></span></div>
+    <div class="qtext">Q${quiz.idx + 1}. ${esc(q.text)}</div>
+    ${q.graph ? '<div class="qgraph" id="qGraph"></div>' : ''}
+    <div class="opts">${q.opts.map(o => `<button class="opt" data-o="${esc(o)}">${optLabel(q, o)}${showKeys && o === q.answer ? '<span class="key">정답</span>' : ''}</button>`).join('')}</div>
+    <div id="qFeed"></div>`;
+  if (q.graph) new Pyramid($('#qGraph'), { compact: true, max: q.data.max, label: '퀴즈 그래프' }).set(q.data.m, q.data.f, true, 700);
+  $$('.opt').forEach(b => b.addEventListener('click', () => answerQ(b.dataset.o)));
+}
+function answerQ(o) {
+  const q = quiz.list[quiz.idx], ok = o === q.answer;
+  quiz.results.push({ q, chosen: o, ok });
+  $$('.opt').forEach(b => { b.disabled = true; if (b.dataset.o === q.answer) b.classList.add('correct'); else if (b.dataset.o === o) b.classList.add('wrong'); });
+  const last = quiz.idx === quiz.list.length - 1;
+  $('#qFeed').innerHTML = `<div class="feedback ${ok ? 'ok' : 'no'}">${ok ? '🎉 정답이에요!' : `😅 아쉬워요! 정답은 <b>${esc(ansText(q, q.answer))}</b>이에요.`}<br>${esc(q.explain)}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:.8rem"><button class="btn primary" id="qNext">${last ? '🏁 결과 보기' : '다음 문제 ▶'}</button></div>`;
+  $('#qNext').onclick = () => { if (last) endQuiz(); else { quiz.idx++; renderQ(); } };
+  $('#qNext').focus();
+}
+function endQuiz() {
+  const score = quiz.results.filter(r => r.ok).length, total = quiz.results.length;
+  if (!quiz.retry) {
+    const recs = store.get(KEY.quiz, []);
+    const d = new Date();
+    recs.push({ date: `${d.getMonth() + 1}월 ${d.getDate()}일 ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`, score, total });
+    store.set(KEY.quiz, recs.slice(-50));
+  }
+  const wrong = quiz.results.filter(r => !r.ok);
+  const msg = score === total ? '🏆 완벽해요! 인구 피라미드 박사!' : score >= total * 0.7 ? '👍 아주 잘했어요!' : '💪 틀린 문제를 다시 보고 한 번 더 도전해요!';
+  $('#quizBox').innerHTML = `<h2 style="text-align:center">${quiz.retry ? '🔁 다시 풀기 결과' : '🏁 퀴즈 결과'}</h2>
+    <div class="score-big">${score} / ${total}</div><p style="text-align:center;font-weight:800;font-size:1.15rem">${msg}</p>
+    <div class="row" style="justify-content:center">
+      ${wrong.length ? '<button class="btn blue" id="qRetry">🔁 틀린 문제만 다시 풀기</button>' : ''}
+      <button class="btn primary" id="qAgain">🚀 새로 10문제 풀기</button>
+      <button class="btn ghost" id="qHome">🏠 처음으로</button>
+    </div>
+    ${wrong.length ? `<h3 style="margin-top:1.2rem">📌 틀린 문제 다시 보기</h3>${wrong.map((r, i) => `<div class="review"><b>${esc(r.q.text)}</b>${r.q.graph ? `<div class="qgraph" id="rv${i}" style="max-width:300px;margin:.5rem 0"></div>` : ''}
+      <p>❌ 내가 고른 답: ${esc(ansText(r.q, r.chosen))}<br>✅ 정답: <b>${esc(ansText(r.q, r.q.answer))}</b></p><p class="muted">${esc(r.q.explain)}</p></div>`).join('')}` : ''}`;
+  wrong.forEach((r, i) => { if (r.q.graph) new Pyramid($('#rv' + i), { compact: true, max: r.q.data.max }).set(r.q.data.m, r.q.data.f, false); });
+  if (wrong.length) $('#qRetry').onclick = () => startQuiz(wrong.map(r => BANK.find(b => b.text === r.q.text && b.answer === r.q.answer)));
+  $('#qAgain').onclick = () => startQuiz();
+  $('#qHome').onclick = quizHome;
+}
+
+/* ================= 교사 모드 · 발표 모드 ================= */
+const TEACHER_PIN = '1234'; // ← 교사 모드 비밀번호 (바꿔서 쓰세요)
+$('#teacherBtn').addEventListener('click', () => {
+  if (document.body.classList.contains('teacher-on')) { teacherPanel(); return; }
+  openModal(`<h2>🧑‍🏫 교사 모드</h2><p>선생님 비밀번호를 입력하세요.</p>
+    <form id="pinForm" class="row"><input type="password" id="pin" inputmode="numeric" style="max-width:14rem" autocomplete="off"><button class="btn primary">들어가기</button></form><p id="pinMsg" style="color:var(--bad);font-weight:700"></p>`);
+  $('#pin').focus();
+  $('#pinForm').onsubmit = e => { e.preventDefault(); if ($('#pin').value === TEACHER_PIN) { document.body.classList.add('teacher-on'); $('#teacherBtn').textContent = '🧑‍🏫 교사 모드 켜짐'; teacherPanel(); } else $('#pinMsg').textContent = '비밀번호가 맞지 않아요.'; };
+});
+function teacherPanel() {
+  const recs = store.get(KEY.quiz, []);
+  const avg = recs.length ? (recs.reduce((s, r) => s + r.score, 0) / recs.length).toFixed(1) : '-';
+  openModal(`<h2>🧑‍🏫 교사 모드</h2>
+    <div class="row"><button class="btn ${showKeys ? 'on' : 'ghost'}" id="tKeys">${showKeys ? '✅ 퀴즈 정답 표시 켜짐' : '👀 퀴즈 화면에 정답 표시하기'}</button>
+      <button class="btn ghost" id="tOff">🔒 교사 모드 끄기</button></div>
+    <h3 style="margin-top:1rem">📋 전체 퀴즈 문제와 정답 (${BANK.length}문제 중 10문제 출제)</h3>
+    <div class="tlist"><ol>${BANK.map(q => `<li>${esc(q.text)}${q.graph ? ` <i>[${TYPES[q.graph].name} 그래프]</i>` : ''}<br>➡ <b style="color:var(--ok)">${esc(ansText(q, q.answer))}</b></li>`).join('')}</ol></div>
+    <h3 style="margin-top:1rem">📒 이 기기의 퀴즈 기록 (${recs.length}회 · 평균 ${avg}점)</h3>
+    <div class="tlist">${recs.length ? `<ul class="rec-list">${recs.slice().reverse().map(r => `<li>${esc(r.date)} — ${r.score} / ${r.total}점</li>`).join('')}</ul>` : '<p class="muted">기록이 없어요.</p>'}</div>
+    <div class="row" style="margin-top:1rem"><button class="btn danger" id="tReset">🗑 퀴즈 기록 초기화</button></div>`);
+  $('#tKeys').onclick = () => { showKeys = !showKeys; teacherPanel(); if (quiz && $('#qFeed') && !$('#qFeed').innerHTML) renderQ(); };
+  $('#tOff').onclick = () => { document.body.classList.remove('teacher-on'); showKeys = false; $('#teacherBtn').textContent = '🧑‍🏫 교사 모드'; closeModal(); if (quiz && $('#qFeed') && !$('#qFeed').innerHTML) renderQ(); };
+  $('#tReset').onclick = () => { if (confirm('이 기기의 퀴즈 기록을 모두 지울까요?')) { store.del(KEY.quiz); teacherPanel(); if (inited.quiz && !quiz) quizHome(); } };}
+function setPresent(on) { document.documentElement.classList.toggle('present', on); $('#presentBtn').classList.toggle('on', on); $('#presentBtn').setAttribute('aria-pressed', on); $('#presentBtn').textContent = on ? '📺 발표 모드 끄기' : '📺 발표 모드'; store.set(KEY.present, on); }
+$('#presentBtn').addEventListener('click', () => setPresent(!document.documentElement.classList.contains('present')));
+
+/* ================= 시작 ================= */
+const INIT = { learn: initLearn, types: initTypes, korea: initKorea, build: initBuild, quiz: initQuiz };
+setPresent(store.get(KEY.present, false));
+const lastTab = store.get(KEY.tab, 'learn');
+openTab(INIT[lastTab] ? lastTab : 'learn');
+
+/* =====================================================================
+   ✏️ 수정 방법 안내 (선생님용)
+   - 퀴즈 문제 추가: 위의 `const BANK = [ ... ]` 배열에 한 줄을 더하세요.
+       · 유형 고르기: { kind:'situ', text:'문제', answer:'gourd', explain:'해설' }
+         (kind: graph / desc / situ / concept, answer: pyramid·bell·spindle·star·gourd)
+       · 그래프 문제: kind:'graph', graph:'star' 처럼 그릴 유형을 적어요.
+       · 보기 직접 쓰기: options:['보기1','보기2','보기3','보기4'], answer:'보기1'
+       · 출제 수 조절: startQuiz() 안의 slice(0, 3) 숫자를 바꾸세요. (지금: 그래프3·특징3·상황3·개념1)
+   - 유형 설명·그래프 모양 고치기: `const TYPES = { ... }` 의 글과 tpl(0~4세부터 85세 이상까지 18칸 막대 길이)을 바꾸세요.
+   - 우리나라 인구 값: `const KOREA = [ ... ]` 의 m(남자), f(여자) 배열(단위: 천 명)과 질문 q, 답 a를 고치세요.
+   - 내가 만드는 피라미드 미션: HTML의 class="mission" 부분에서 미션 글과 힌트를 고치세요.
+       · 시작 모양은 START_2020(2020년 모양), PDF 한 쪽의 내용은 drawBuildPage() 에서 바꿀 수 있어요.
+       · ‘생각해 봅시다’ 질문 글은 HTML의 id="reasonForm" 부분과 ANS_FIELDS 의 title(PDF에 찍히는 제목)을 함께 고치세요.
+       · 학생이 쓰던 막대·이름·답은 이 기기에 임시 저장돼서, 화면을 다시 열어도 이어서 쓸 수 있어요.
+   - 낱말 풀이 추가: `const GLOSS = { ... }` 에 '낱말': '뜻' 을 더하고, 글 속에서 [[낱말]] 로 쓰면 눌러서 뜻을 볼 수 있어요.
+   - 교사 모드 비밀번호: TEACHER_PIN 값을 바꾸세요. (기본 1234)
+   - 저장: 퀴즈 기록과 학생이 쓴 답은 이 기기 브라우저(localStorage)에만 저장되고 밖으로 보내지 않아요.
+   ===================================================================== */
+</script>
+</body>
+</html>
